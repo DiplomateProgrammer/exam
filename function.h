@@ -2,7 +2,6 @@
 #define FUNCTION_H
 #include <memory>
 #include <type_traits>
-#include <cstdlib>
 static const size_t MAX_SMALL_SIZE = 64;
 namespace my
 {
