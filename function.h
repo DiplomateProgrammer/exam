@@ -32,7 +32,7 @@ struct function<T(Args...)>
         std::unique_ptr<callable> copy() const override { return std::make_unique<callable_impl<F>>(f); }
 
     private:
-        F f;
+        mutable F f;
     };
 
     function() noexcept : ptr(nullptr), is_small(false) {}
@@ -105,6 +105,7 @@ struct function<T(Args...)>
     }
     function &operator=(function &&other) noexcept
     {
+        if(other == this) return this;
         if (this->is_small) { (reinterpret_cast<callable*>(&buffer))->~callable(); }
         else { (reinterpret_cast<std::unique_ptr<callable>*>(&buffer))->~unique_ptr(); }
         move_impl(std::move(other));
@@ -122,7 +123,7 @@ struct function<T(Args...)>
     private:
         union
         {
-            mutable typename std::aligned_storage<MAX_SMALL_SIZE, alignof(size_t)>::type buffer;
+            typename std::aligned_storage<MAX_SMALL_SIZE, alignof(size_t)>::type buffer;
             std::unique_ptr<callable> ptr;
         };
         bool is_small;
